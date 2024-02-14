@@ -1,0 +1,5 @@
+tensorly
+torch
+einops
+entmax
+numpy
