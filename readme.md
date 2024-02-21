@@ -1,13 +1,13 @@
 # Multilinear Mixture of Experts:<br> Scalable Expert Specialization through Factorization
 
-[![arXiv](https://img.shields.io/badge/arXiv-XXXX.YYYYY-red)](https://arxiv.org/abs/2305.14053) [![project_page](https://img.shields.io/badge/project_page-orange)](http://eecs.qmul.ac.uk/~jo001/MMoE/)
+[![arXiv](https://img.shields.io/badge/arXiv-2402.12550-red)](https://arxiv.org/abs/2402.12550) [![project_page](https://img.shields.io/badge/project_page-orange)](http://eecs.qmul.ac.uk/~jo001/MMoE/)
 
 ## Abstract
 
 > **Multilinear Mixture of Experts: Scalable Expert Specialization through Factorization**<br>
 James Oldfield, Markos Georgopoulos, Grigorios G. Chrysos, Christos Tzelepis, Yannis Panagakis, Mihalis A. Nicolaou, Jiankang Deng, Ioannis Patras<br>
 *ArXiv*, 2024 <br>
-https://arxiv.org/abs/XXXX.YYYYY <br>
+https://arxiv.org/abs/2402.12550 <br>
 > **Abstract**: The Mixture of Experts (MoE) paradigm provides a powerful way to decompose inscrutable dense layers into smaller, modular computations often more amenable to human interpretation, debugging, and editability. A major problem however lies in the computational cost of scaling the number of experts to achieve sufficiently fine-grained specialization. In this paper, we propose the Multilinear Mixutre of Experts (MMoE) layer to address this, focusing on vision models. MMoE layers perform an implicit computation on prohibitively large weight tensors entirely in factorized form. Consequently, MMoEs both (1) avoid the issues incurred through the discrete expert routing in the popular 'sparse' MoE models, yet (2) do not incur the restrictively high inference-time costs of 'soft' MoE alternatives. We present both qualitative and quantitative evidence (through visualization and counterfactual interventions respectively) that scaling MMoE layers when fine-tuning foundation models for vision tasks leads to more specialized experts at the class-level whilst remaining competitive with the performance of parameter-matched linear layer counterparts. Finally, we show that learned expert specialism further facilitates manual correction of demographic bias in CelebA attribute classification.
 
 <img src="./images/anim.gif" width="750"/>
@@ -99,7 +99,7 @@ If you find our work useful, please consider citing our paper:
     title={Multilinear Mixture of Experts: Scalable Expert Specialization through Factorization},
     author={James Oldfield and Markos Georgopoulos and Grigorios G. Chrysos and Christos Tzelepis and Yannis Panagakis and Mihalis A. Nicolaou and Jiankang Deng and Ioannis Patras},
     year={2024},
-    eprint={XXXX.YYYYY},
+    eprint={2402.12550},
     archivePrefix={arXiv},
     primaryClass={cs.CV}
 }
