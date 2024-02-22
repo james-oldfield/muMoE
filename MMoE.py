@@ -41,7 +41,7 @@ class TTMMoE(nn.Module):
                 r[1] += 1 # add bias dimension to the second-to-last "input" mode
 
             if fi < len(expert_dims):
-                var = 1.0 if fi == 2 else 0.0
+                var = 1.0 if fi == 0 else 0.0
                 W = nn.Parameter(torch.zeros(*[r]), requires_grad=True)
                 # init each slice with a diagonal matrix with elements N(1,var) to replicate linear layers along expert dimensions
                 for dim in range(r[1]):
