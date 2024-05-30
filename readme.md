@@ -1,6 +1,6 @@
 # Multilinear Mixture of Experts:<br> Scalable Expert Specialization through Factorization
 
-[![arXiv](https://img.shields.io/badge/arXiv-2402.12550-red)](https://arxiv.org/abs/2402.12550) [![project_page](https://img.shields.io/badge/project_page-orange)](http://eecs.qmul.ac.uk/~jo001/MMoE/)
+[![arXiv](https://img.shields.io/badge/arXiv-2402.12550-red)](https://arxiv.org/abs/2402.12550) [![project_page](https://img.shields.io/badge/project_page-orange)](https://james-oldfield.github.io/muMoE/)
 
 ## Abstract
 
@@ -8,11 +8,12 @@
 James Oldfield, Markos Georgopoulos, Grigorios G. Chrysos, Christos Tzelepis, Yannis Panagakis, Mihalis A. Nicolaou, Jiankang Deng, Ioannis Patras<br>
 *ArXiv*, 2024 <br>
 https://arxiv.org/abs/2402.12550 <br>
-> **Abstract**: The Mixture of Experts (MoE) paradigm provides a powerful way to decompose inscrutable dense layers into smaller, modular computations often more amenable to human interpretation, debugging, and editability. A major problem however lies in the computational cost of scaling the number of experts to achieve sufficiently fine-grained specialization. In this paper, we propose the Multilinear Mixutre of Experts (MMoE) layer to address this, focusing on vision models. MMoE layers perform an implicit computation on prohibitively large weight tensors entirely in factorized form. Consequently, MMoEs both (1) avoid the issues incurred through the discrete expert routing in the popular 'sparse' MoE models, yet (2) do not incur the restrictively high inference-time costs of 'soft' MoE alternatives. We present both qualitative and quantitative evidence (through visualization and counterfactual interventions respectively) that scaling MMoE layers when fine-tuning foundation models for vision tasks leads to more specialized experts at the class-level whilst remaining competitive with the performance of parameter-matched linear layer counterparts. Finally, we show that learned expert specialism further facilitates manual correction of demographic bias in CelebA attribute classification.
+> **Abstract**: The Mixture of Experts (MoE) paradigm provides a powerful way to decompose dense layers into smaller, modular computations often more amenable to human interpretation, debugging, and editability. However, a major challenge lies in the computational cost of scaling the number of experts high enough to achieve fine-grained specialization. In this paper, we propose the Multilinear Mixture of Experts (μMoE) layer to address this, focusing on vision models. μMoE layers enable scalable expert specialization by performing an implicit computation on prohibitively large weight tensors entirely in factorized form. Consequently, μMoEs (1) avoid the restrictively high inference-time costs of 'soft' MoEs, yet (2) do not inherit the training issues of the popular 'sparse' MoEs' discrete (non-differentiable) expert routing. We present both qualitative and quantitative evidence that scaling μMoE layers when fine-tuning foundation models for vision tasks leads to more specialized experts at the class-level, further enabling manual bias correction in CelebA attribute classification. Finally, we show qualitative results demonstrating the expert specialism achieved when pre-training large GPT2 and MLP-Mixer models with parameter-matched μMoE blocks at every layer, maintaining comparable accuracy.
 
-<img src="./images/anim.gif" width="750"/>
+### The μMoE forward pass
+<img src="./images/anim.gif" width="400"/>
 
-> Illustration of a two-hierarchy MMoE layer’s (unfactorized) forward pass as a series of tensor contractions, with 3 experts at both levels of hierarchy. The experts’ weight matrices are visualized as 2D horizontal slices in yellow, which are (1) matrix-multiplied with the input vector, (2) summed over the first expert mode (weighted by the first expert coefficients a1 in red), and (3) summed over the second expert mode (weighted by the second expert mode’s coefficients a2 in dark green).
+> The forward pass of an (unfactorized) μMoE layer as a series of two tensor contractions: the experts' weight matrices are matrix-multiplied with the input vector and summed (weighted by the expert coefficients).
 
 
 ## Install
@@ -25,77 +26,86 @@ pip install -r requirements.txt
 
 ## Usage
 
-### CPMMoE
+### CPμMoE
 
 ```python
 # initialise a rank-R CPMMoE
 import torch
-from MMoE import CPMMoE
+from MuMoE import CPMuMoE
 
 n_experts = 32; batch_size = 4; in_dim = 4; out_dim = 8
 x = torch.randn(batch_size, in_dim)
 
 R = 32
-model = CPMMoE(in_dim, out_dim, expert_dims=[n_experts], rank=R)
+model = MuMoE(input_dim=in_dim, output_dim=out_dim, MuMoE_layer=CPMuMoE, expert_dims=[n_experts], ranks=R)
 y = model(x)
 
 # or with two levels of hierarchy
-model = CPMMoE(in_dim, out_dim, expert_dims=[n_experts, 2], rank=R, hierarchy=2)
+model = MuMoE(input_dim=in_dim, output_dim=out_dim, MuMoE_layer=CPMuMoE, expert_dims=[n_experts, 2], ranks=R, hierarchy=2)
 y = model(x)
 ```
-
-### TuckerMMoE
+### TRμMoE
 
 ```python
 import torch
-from MMoE import TuckerMMoE
+from MuMoE import TRMuMoE
 
 n_experts = 32; batch_size = 4; in_dim = 4; out_dim = 8
 x = torch.randn(batch_size, in_dim)
 
-ranks = [8, 8, 8]
-model = TuckerMMoE(in_dim, out_dim, expert_dims=[n_experts], ranks=ranks)
-y = model(x)
-
-# or with two levels of hierarchy
-ranks = [8, 8, 8, 8]
-model = TuckerMMoE(in_dim, out_dim, expert_dims=[n_experts, 2], ranks=ranks, hierarchy=2)
-y = model(x)
-```
-
-### TT/TRMMoE
-
-```python
-import torch
-from MMoE import TTMMoE
-
-n_experts = 32; batch_size = 4; in_dim = 4; out_dim = 8
-x = torch.randn(batch_size, in_dim)
-
-r1 = 1 ; r2 = 4 ; r3 = 4  # TT
 r1 = 4 ; r2 = 4 ; r3 = 4  # TR
 ranks = [[r1, n_experts, r2], [r2, in_dim, r3], [r3, out_dim, r1]]
-model = TTMMoE(in_dim, out_dim, expert_dims=[n_experts], ranks=ranks)
+model = MuMoE(input_dim=in_dim, output_dim=out_dim, MuMoE_layer=TRMuMoE, expert_dims=[n_experts], ranks=ranks)
 y = model(x)
 
 # or with two levels of hierarchy
-r1 = 1 ; r2 = 4 ; r3 = 4 ; r4 = 4  # TT
 r1 = 4 ; r2 = 4 ; r3 = 4 ; r4 = 4  # TR
 ranks = [[r1, n_experts, r2], [r2, n_experts, r3], [r3, in_dim, r4], [r4, out_dim, r1]]
-model = TTMMoE(in_dim, out_dim, expert_dims=[n_experts, 2], ranks=ranks, hierarchy=2)
+model = MuMoE(input_dim=in_dim, output_dim=out_dim, MuMoE_layer=TRMuMoE, expert_dims=[n_experts, 2], ranks=ranks, hierarchy=2)
 y = model(x)
 ```
 
 ## Experiments
 
-Coming soon
+
+### MLP-Mixer
+
+To reproduce the results for the baseline MLP mixer s16 model for the full 300 epochs, we use 4x80GB A100 GPUs. Please run:
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch --multi_gpu --mixed_precision "bf16" mlp_mixer.py --layer "MLP" --stochastic_depth
+```
+
+And for the μMoE models:
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch --multi_gpu --mixed_precision "bf16" mlp_mixer.py --layer "CPMuMoE" --stochastic_depth
+CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch --multi_gpu --mixed_precision "bf16" mlp_mixer.py --layer "TRMuMoE" --stochastic_depth
+```
+
+### GPT-2 pre-training on openwebtext2
+
+Please see the `./experiments/nanoGPT` directory. To reproduce the results reported, please run:
+
+The baseline:
+
+```bash
+torchrun --standalone --nproc_per_node=4 train.py --layer_type='linear' --compile=False config/train_gpt2.py
+```
+
+And for the μMoE models:
+
+```bash
+torchrun --standalone --nproc_per_node=4 train.py --layer_type='CPMuMoE' --compile=False config/train_gpt2.py --n_experts=256
+torchrun --standalone --nproc_per_node=4 train.py --layer_type='TRMuMoE' --compile=False config/train_gpt2.py --n_experts=256
+```
 
 ## Citation
 
 If you find our work useful, please consider citing our paper:
 
 ```bibtex
-@misc{oldfield2024mmoe,
+@misc{oldfield2024mumoe,
     title={Multilinear Mixture of Experts: Scalable Expert Specialization through Factorization},
     author={James Oldfield and Markos Georgopoulos and Grigorios G. Chrysos and Christos Tzelepis and Yannis Panagakis and Mihalis A. Nicolaou and Jiankang Deng and Ioannis Patras},
     year={2024},

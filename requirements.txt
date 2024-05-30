@@ -1,5 +1,10 @@
 tensorly
 torch
+torchvision
 einops
 entmax
 numpy
+timm
+tqdm
+matplotlib
+fvcore
