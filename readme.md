@@ -6,9 +6,9 @@
 
 > **Multilinear Mixture of Experts: Scalable Expert Specialization through Factorization**<br>
 James Oldfield, Markos Georgopoulos, Grigorios G. Chrysos, Christos Tzelepis, Yannis Panagakis, Mihalis A. Nicolaou, Jiankang Deng, Ioannis Patras<br>
-*ArXiv*, 2024 <br>
+*NeurIPS*, 2024 <br>
 https://arxiv.org/abs/2402.12550 <br>
-> **Abstract**: The Mixture of Experts (MoE) paradigm provides a powerful way to decompose dense layers into smaller, modular computations often more amenable to human interpretation, debugging, and editability. However, a major challenge lies in the computational cost of scaling the number of experts high enough to achieve fine-grained specialization. In this paper, we propose the Multilinear Mixture of Experts (μMoE) layer to address this, focusing on vision models. μMoE layers enable scalable expert specialization by performing an implicit computation on prohibitively large weight tensors entirely in factorized form. Consequently, μMoEs (1) avoid the restrictively high inference-time costs of 'soft' MoEs, yet (2) do not inherit the training issues of the popular 'sparse' MoEs' discrete (non-differentiable) expert routing. We present both qualitative and quantitative evidence that scaling μMoE layers when fine-tuning foundation models for vision tasks leads to more specialized experts at the class-level, further enabling manual bias correction in CelebA attribute classification. Finally, we show qualitative results demonstrating the expert specialism achieved when pre-training large GPT2 and MLP-Mixer models with parameter-matched μMoE blocks at every layer, maintaining comparable accuracy.
+> **Abstract**: The Mixture of Experts (MoE) paradigm provides a powerful way to decompose dense layers into smaller, modular computations often more amenable to human interpretation, debugging, and editability. However, a major challenge lies in the computational cost of scaling the number of experts high enough to achieve fine-grained specialization. In this paper, we propose the Multilinear Mixture of Experts (μMoE) layer to address this, focusing on vision models. μMoE layers enable scalable expert specialization by performing an implicit computation on prohibitively large weight tensors entirely in factorized form. Consequently, μMoEs (1) avoid the restrictively high inference-time costs of dense MoEs, yet (2) do not inherit the training issues of the popular sparse MoEs' discrete (non-differentiable) expert routing. We present both qualitative and quantitative evidence that scaling μMoE layers when fine-tuning foundation models for vision tasks leads to more specialized experts at the class-level, further enabling manual bias correction in CelebA attribute classification. Finally, we show qualitative results demonstrating the expert specialism achieved when pre-training large GPT2 and MLP-Mixer models with parameter-matched μMoE blocks at every layer, maintaining comparable accuracy.
 
 ### The μMoE forward pass
 <img src="./images/anim.gif" width="400"/>
@@ -105,13 +105,12 @@ torchrun --standalone --nproc_per_node=4 train.py --layer_type='TRMuMoE' --compi
 If you find our work useful, please consider citing our paper:
 
 ```bibtex
-@misc{oldfield2024mumoe,
+@inproceedings{oldfield2024mumoe,
     title={Multilinear Mixture of Experts: Scalable Expert Specialization through Factorization},
     author={James Oldfield and Markos Georgopoulos and Grigorios G. Chrysos and Christos Tzelepis and Yannis Panagakis and Mihalis A. Nicolaou and Jiankang Deng and Ioannis Patras},
+    booktitle={Thirty-eighth Conference on Neural Information Processing Systems},
     year={2024},
-    eprint={2402.12550},
-    archivePrefix={arXiv},
-    primaryClass={cs.CV}
+    url={https://openreview.net/forum?id=bIa03mAtxQ}
 }
 ```
 
